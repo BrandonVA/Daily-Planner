@@ -1,28 +1,31 @@
 $(document).ready(function(){
 
-    // console.log('hello world');
-
-    //let time = moment().format('LT');
+    // Declaring vars for
+     let currentDayEl = $('#currentDay');
      let todaysDate = moment().format('MMMM Do YYYY, h:mm:ss a');
      todaysDate = todaysDate.split(',')
      todaysDate = `${moment().format('dddd')}, ${todaysDate[0]}`;
 
+     
 
-    // // messing around with selectors 
-    // let testDataHour = $('div[data-hour]').children('div.col-8');
-    // console.log(testDataHour);
-    // testDataHour.addClass('present');
+
+
 
 
     
-//--------------------------Time obj-------------------------------
+    //--------------------------Time obj-------------------------------
     const timeObj = {
         currentDay: todaysDate,
         time: moment().format('LT'),
         militaryTime: ''
     }
 
-    // converting time to be used in military time for an easy check and update with html div elements with the data-hour atrribute.
+    
+
+
+    // ---Converted data
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ---------------------------Function to take current time and convert to military time------------------------------------
     const convertToMilitaryTime = () => {
 
         // Declating a var for am or pm 
@@ -34,23 +37,19 @@ $(document).ready(function(){
         // Once split store new value and turn into a number.
         timeToConvert = parseInt(timeToConvert);
 
-        ///////////////////////////////////////////checking logic
-        // morningOrEvening = 'PM';
-        // timeToConvert = 2;
-        // console.log(timeToConvert);
-
-
         // Adding checks for if its am or pm 
         if (morningOrEvening === 'PM') {
-            // if the time was pm and its the time is not 12(pm)
+            // if the time was pm and its the time is not 12(pm)                  //if time is 12(pm)
             timeToConvert !== 12 ? timeToConvert = (timeToConvert * 100) + 1200 : timeToConvert *= 100;
+        // If time is AM
         } else {
-            // if the time is 12(am)
+            // If the time is 12(am)                  // if time is not 12(am)
             timeToConvert === 12 ? timeToConvert = 0: timeToConvert *= 100;
         }
+        // Setting object militaryTime to newly converted time.
         return timeObj.militaryTime = timeToConvert;
     }
-
+    // calling function to update timeObj
     convertToMilitaryTime()
 
 
@@ -60,28 +59,24 @@ $(document).ready(function(){
 
 
 
-
-
+    // -- DOM manipulation
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    currentDayEl.text(timeObj.currentDay);
+    // ---------------------------------Loop through all rows and update DOM accordingly---------------------------------------
     $(".row").each(function() {
+
+        // -----------------Creating vars for the elments requred update the DOM----------------------------
+        // Div row containg all the hourly content and grabing its data-hour attribute
         let checkDataHour = $(this).attr('data-hour');
-
-        
+        // Div containg the textarea element
         let textAreaDivEl = $(this).children('div.textDiv');
+        // The value of the textarea data-name attribute
         let textareaDataName = textAreaDivEl.children('textarea').attr('data-name');
-        console.log(textareaDataName);
+        // turning value of the textarea data-name attr to a number to be compared to the converted time in timeObj
+        checkDataHour = parseInt(checkDataHour);
 
-
-
-
-
-
-        // checkDataHour = parseInt(checkDataHour);
-        checkDataHour = parseInt(checkDataHour)
-        console.log(checkDataHour);
-        console.log('----------');
-        console.log(timeObj.militaryTime);
-
-
+        // ------------------Checking the time and comparing it to the html elements and adding classes-------------------------------
+        //-------------------according to if they are in the past present or future.--------------------------------------------------
         if ( checkDataHour < timeObj.militaryTime ) {
             $(this).children('div .col-8').addClass('past');
         }
@@ -92,100 +87,58 @@ $(document).ready(function(){
             $(this).children('div.col-8').addClass('future');
         }
 
+        // -------------------Checking if hourly log exists if it does update the corresponding---------------------------------- 
+        //--------------------Html element with the value of that keys value.-----------------------------------------------------
         if(localStorage.getItem('hourlyLog') !== null) {
+            // parsing localStorage obj to be manipulated.
             let hourlyLogObj = JSON.parse(localStorage.getItem('hourlyLog'));
+            // If there is a corresponding value in the obj for the textarea update the elment 
             if ( hourlyLogObj.hasOwnProperty(textareaDataName) ) {
-                textAreaDivEl.children('textarea').val(hourlyLogObj[textareaDataName])
-                console.log( hourlyLogObj[textareaDataName] );
-
+                // sets value of textarea to value stored in hourly-log local obj
+                textAreaDivEl.children('textarea').val(hourlyLogObj[textareaDataName]);
             }
         }
-
-
-
     })
-    // console.log(timeObj.militaryTime);
-
-
-   
-
-
-    // console.log(timeObj.time);
-    // console.log(timeObj.time.length);
-    // console.log(morningOrEvening);
-    // console.log(timeObj.currentDay);
-
-    //-----------------------------UPDATING DOM---------------------------------------
-    let currentDayEl = $('#currentDay');
 
 
 
-    currentDayEl.text(timeObj.currentDay);
 
+
+    // -- Creating and updating local storage Object
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //-----------------------------Saving Value of the new input to the textarea---------------------------------------
     $('.saveBtn').on('click', function(){
-
-
-
-        
+        //------------------- Declaring vars for target specific data-----------------------------------
+        // Element of the this events prevouse sibling and that elements child thats a teaxtarea element
         let textAreaEl = $(this).prev().children('textarea');
+        // Value of the textarea
         let textAreaElValue = textAreaEl.val();
+        // Value of the textareas data-name attr
         let textareaDataName = textAreaEl.attr('data-name');
-        console.log(textareaDataName);
 
-
-
-        // first add a check to see if value( textarea.val() ) was filled out if not than ask to fill it out 
-        if ( textAreaElValue === '') {
-                alert('Please fill in the field.')
-            } else {
-
-            // Check if localStorage obj exists if not need to creat an object for local storage 
-            if (localStorage.getItem('hourlyLog') === null) { 
-                localStorage.setItem('hourlyLog','{}'); 
-            }
-            // Once object is created parse it and set to new var to so we can manipulate and add key value pairs
-            let old_hourlyLog = JSON.parse(localStorage.getItem('hourlyLog'));
-
-            // once created when clicked see if obj hasOwnProperty of textarea data-name attr 
-            if (old_hourlyLog.hasOwnProperty(textareaDataName) === false) {
-                // if ture add it
-                old_hourlyLog[textareaDataName] = textAreaElValue;
-                alert('porp created')
-            } else {
-                // if not than update property value   ------------------------Might be able to omit the first check? test later
-                old_hourlyLog[textareaDataName] = textAreaElValue;
-            }
-
-
-            console.log(old_hourlyLog);
-            // console.log(old_hourlyLog[textareaDataName]);
-
-            let new_houlyLog = JSON.stringify(old_hourlyLog);
-            localStorage.setItem('hourlyLog',new_houlyLog);
-    
-            console.log(localStorage.getItem('hourlyLog'));
+        //--------------------Check if Local Storage Object exists if not create it.-------------
+        if (localStorage.getItem('hourlyLog') === null) { 
+            localStorage.setItem('hourlyLog','{}'); 
         }
 
+        //--------------------Updating Local Storage Object----------------------
+        // Once object is created parse it and set to new var to so we can manipulate and add key value pairs
+        let old_hourlyLog = JSON.parse(localStorage.getItem('hourlyLog'));
+        // See if the obj hasOwnProperty of (textarea data-name attr) and if its  value is empty
+        if ( old_hourlyLog.hasOwnProperty(textareaDataName)  === false && textAreaElValue === '') {
+            // if there is no property and value is empty don't update and notify user.
+            alert('Please fill out the text area.');
+        } else {
+            // if not then update property value or creat it.
+            old_hourlyLog[textareaDataName] = textAreaElValue;
+        }
 
-
-
-
-
-
-  
-
-
-        
-
-
-
-
-
-
-
-
-
+        // -----------------------Updates Local Storage object with newly created data-------------------
+        let new_houlyLog = JSON.stringify(old_hourlyLog);
+        localStorage.setItem('hourlyLog',new_houlyLog);
     })
+
+
 
     
 })
