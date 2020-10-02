@@ -1,15 +1,9 @@
 $(document).ready(function(){
 
-    // Declaring vars for
-     let currentDayEl = $('#currentDay');
+    // Getting value of the date and removing some unnecessary data from it.
      let todaysDate = moment().format('MMMM Do YYYY, h:mm:ss a');
      todaysDate = todaysDate.split(',')
      todaysDate = `${moment().format('dddd')}, ${todaysDate[0]}`;
-
-     
-
-
-
 
 
     
@@ -23,12 +17,12 @@ $(document).ready(function(){
     
 
 
-    // ---Converted data
+    // ---Converted time data
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ---------------------------Function to take current time and convert to military time------------------------------------
+    // ---------------------------Function to take current time and convert it to military time------------------------------------
     const convertToMilitaryTime = () => {
 
-        // Declating a var for am or pm 
+        // Declaring  a var for am or pm 
         let morningOrEvening = timeObj.time.slice(-2);
         // Declaring another var to store hour value and split the givin time by a colon :  
         let timeToConvert = timeObj.time.split(':')
@@ -61,7 +55,7 @@ $(document).ready(function(){
 
     // -- DOM manipulation
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    currentDayEl.text(timeObj.currentDay);
+    $('#currentDay').text(timeObj.currentDay);
     // ---------------------------------Loop through all rows and update DOM accordingly---------------------------------------
     $(".row").each(function() {
 
@@ -129,13 +123,13 @@ $(document).ready(function(){
             // if there is no property and value is empty don't update and notify user.
             alert('Please fill out the text area.');
         } else {
-            // if not then update property value or creat it.
+            // if not then update property value or create it.
             old_hourlyLog[textareaDataName] = textAreaElValue;
         }
 
         // -----------------------Updates Local Storage object with newly created data-------------------
-        let new_houlyLog = JSON.stringify(old_hourlyLog);
-        localStorage.setItem('hourlyLog',new_houlyLog);
+        let new_hourlyLog = JSON.stringify(old_hourlyLog);
+        localStorage.setItem('hourlyLog',new_hourlyLog);
     })
 
 
