@@ -17,7 +17,7 @@ $(document).ready(function(){
     
 
 
-    // ---Converted time data
+    // ---Converting time data
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // ---------------------------Function to take current time and convert it to military time------------------------------------
     const convertToMilitaryTime = () => {
@@ -33,7 +33,7 @@ $(document).ready(function(){
 
         // Adding checks for if its am or pm 
         if (morningOrEvening === 'PM') {
-            // if the time was pm and its the time is not 12(pm)                  //if time is 12(pm)
+            // if the time was pm and its not 12(pm)                  //if time is 12(pm)
             timeToConvert !== 12 ? timeToConvert = (timeToConvert * 100) + 1200 : timeToConvert *= 100;
         // If time is AM
         } else {
@@ -100,7 +100,6 @@ $(document).ready(function(){
 
     // -- Creating and updating local storage Object
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //-----------------------------Saving Value of the new input to the textarea---------------------------------------
     $('.saveBtn').on('click', function(){
         //------------------- Declaring vars for target specific data-----------------------------------
         // Element of the this events prevouse sibling and that elements child thats a teaxtarea element
@@ -131,8 +130,4 @@ $(document).ready(function(){
         let new_hourlyLog = JSON.stringify(old_hourlyLog);
         localStorage.setItem('hourlyLog',new_hourlyLog);
     })
-
-
-
-    
 })
